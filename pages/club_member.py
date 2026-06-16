@@ -1,137 +1,103 @@
 import streamlit as st
-import sqlite3
-from datetime import datetime
 
-
-conn = sqlite3.connect(
-"data/campus.db",
-check_same_thread=False
+st.set_page_config(
+    page_title="Club Member",
+    page_icon="🏛",
+    layout="wide"
 )
 
-cur = conn.cursor()
+# -------------------------
+# SESSION
+# -------------------------
 
+if "club_announcements" not in st.session_state:
+    st.session_state.club_announcements = []
 
-cur.execute("""
-
-CREATE TABLE IF NOT EXISTS club_announcements(
-
-id INTEGER PRIMARY KEY AUTOINCREMENT,
-
-club TEXT,
-
-title TEXT,
-
-message TEXT,
-
-created_at TEXT
-
-)
-
-""")
-
-conn.commit()
-
+# -------------------------
+# HEADER
+# -------------------------
 
 st.title(
-"🏛️ Club Member Portal"
+    "🏛 Club Member Dashboard"
 )
 
-
-club = st.selectbox(
-
-"Select Club",
-
-[
-"Finance Club",
-"E-Cell",
-"AIESEC",
-"Kalakriti",
-"Football Club",
-"Qubit Club"
-]
-
+st.caption(
+    "Manage • Publish • Connect"
 )
 
-
-title = st.text_input(
-"Announcement Title"
-)
-
-message = st.text_area(
-"Write Announcement"
-)
-
-
-if st.button(
-"🚀 Publish"
-):
-
-    cur.execute("""
-
-    INSERT INTO
-    club_announcements
-
-    (
-    club,
-    title,
-    message,
-    created_at
-    )
-
-    VALUES
-    (?, ?, ?, ?)
-
-    """,
-
-    (
-
-    club,
-
-    title,
-
-    message,
-
-    datetime.now().strftime(
-        "%d %b %Y %I:%M %p"
-    )
-
-    ))
-
-    conn.commit()
-
-    st.success(
-    "Published"
-    )
-
-
-st.divider()
+# -------------------------
+# ANNOUNCEMENT
+# -------------------------
 
 st.subheader(
-"Club Feed"
+    "📢 Club Announcement"
 )
 
+announcement = st.text_area(
+    "Write Update"
+)
 
-cur.execute("""
+if st.button(
+    "Publish"
+):
 
-SELECT *
-FROM club_announcements
-ORDER BY id DESC
+    if announcement:
 
-""")
+        st.session_state.club_announcements.append(
+            announcement
+        )
 
-rows = cur.fetchall()
+        st.success(
+            "Announcement Published"
+        )
 
+st.markdown("---")
 
-for row in rows:
+# -------------------------
+# DASHBOARD
+# -------------------------
 
-    st.success(
-f"""
-🏛️ {row[1]}
+st.subheader(
+    "📌 Club Updates"
+)
 
-{row[2]}
+if len(
+    st.session_state.club_announcements
+) == 0:
 
-{row[3]}
+    st.info(
+        "No announcements"
+    )
 
-🕒 {row[4]}
-"""
+for i, post in enumerate(
+    st.session_state.club_announcements
+):
+
+    c1, c2 = st.columns(
+        [5,1]
+    )
+
+    with c1:
+
+        st.success(
+            post
+        )
+
+    with c2:
+
+        if st.button(
+            "🗑 Delete",
+            key=f"club_{i}"
+        ):
+
+            st.session_state.club_announcements.pop(
+                i
+            )
+
+            st.rerun()
+
+st.markdown("---")
+
+st.caption(
+    "Mahindra University • Club Member Portal"
 )
