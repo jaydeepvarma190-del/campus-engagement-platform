@@ -1,278 +1,270 @@
 import streamlit as st
-import sqlite3
 
-
-# ==========================
-# DATABASE
-# ==========================
-
-conn = sqlite3.connect(
-    "data/campus.db",
-    check_same_thread=False
-)
-
-cur = conn.cursor()
-
-
-# ==========================
+# --------------------------------
 # PAGE
-# ==========================
+# --------------------------------
 
 st.set_page_config(
-page_title="Dashboard",
-layout="wide"
+    page_title="Dashboard",
+    page_icon="🎓",
+    layout="wide"
 )
 
+# --------------------------------
+# SESSION
+# --------------------------------
+
+if "teacher_posts" not in st.session_state:
+    st.session_state.teacher_posts = []
+
+if "club_posts" not in st.session_state:
+    st.session_state.club_posts = []
+
+# --------------------------------
+# STYLE
+# --------------------------------
+
+st.markdown("""
+<style>
+
+.stApp{
+background:
+linear-gradient(
+to right,
+#071426,
+#10213d
+);
+
+color:white;
+}
+
+.card{
+padding:20px;
+border-radius:18px;
+background:#132848;
+}
+
+</style>
+""",
+unsafe_allow_html=True)
+
+# --------------------------------
+# HEADER
+# --------------------------------
 
 st.title(
-"📊 Dashboard"
+    "🎓 Campus Dashboard"
 )
 
 st.caption(
-"Campus Engagement Hub"
+    "Discover • Connect • Participate"
 )
 
-
-# ==========================
-# QUICK ACCESS
-# ==========================
-
-st.subheader(
-"⚡ Quick Access"
-)
-
-col1,col2,col3,col4=st.columns(4)
-
-
-with col1:
-
-    if st.button(
-    "🏠 Home",
-    use_container_width=True
-    ):
-
-        st.switch_page(
-        "pages/home.py"
-        )
-
-
-with col2:
-
-    if st.button(
-    "📅 Events",
-    use_container_width=True
-    ):
-
-        st.switch_page(
-        "pages/events.py"
-        )
-
-
-with col3:
-
-    if st.button(
-    "📚 Study Groups",
-    use_container_width=True
-    ):
-
-        st.switch_page(
-        "pages/studygroup.py"
-        )
-
-
-with col4:
-
-    if st.button(
-    "🏛️ Clubs",
-    use_container_width=True
-    ):
-
-        st.switch_page(
-        "pages/clubs.py"
-        )
-
-
-st.divider()
-
-
-# ==========================
-# TEACHER ANNOUNCEMENTS
-# ==========================
-
-st.header(
-"👩‍🏫 Teacher Announcements"
-)
-
-
-try:
-
-    cur.execute("""
-
-    SELECT
-
-    title,
-
-    message,
-
-    teacher,
-
-    created_at
-
-    FROM teacher_announcements
-
-    ORDER BY id DESC
-
-    """)
-
-    teachers = cur.fetchall()
-
-
-    if teachers:
-
-        for row in teachers:
-
-            with st.container():
-
-                st.warning(
-
-f"""
-📢 {row[0]}
-
-{row[1]}
-
-By:
-{row[2]}
-
-🕒 {row[3]}
-"""
-
-)
-
-    else:
-
-        st.info(
-        "No teacher announcements"
-        )
-
-except:
-
-    st.info(
-    "No teacher announcements"
-    )
-
-
-st.divider()
-
-
-# ==========================
-# CLUB ANNOUNCEMENTS
-# ==========================
-
-st.header(
-"🏛️ Club Announcements"
-)
-
-
-try:
-
-    cur.execute("""
-
-    SELECT
-
-    club,
-
-    title,
-
-    message,
-
-    created_at
-
-    FROM club_announcements
-
-    ORDER BY id DESC
-
-    """)
-
-    clubs = cur.fetchall()
-
-
-    if clubs:
-
-        for row in clubs:
-
-            with st.container():
-
-                st.success(
-
-f"""
-🏛️ {row[0]}
-
-{row[1]}
-
-{row[2]}
-
-🕒 {row[3]}
-"""
-
-)
-
-    else:
-
-        st.info(
-        "No club announcements"
-        )
-
-except:
-
-    st.info(
-    "No club announcements"
-    )
-
-
-# ==========================
-# CAMPUS SNAPSHOT
-# ==========================
-
-st.divider()
-
-st.subheader(
-"📈 Campus Snapshot"
-)
+st.markdown("---")
+
+# --------------------------------
+# METRICS
+# --------------------------------
 
 c1,c2,c3,c4=st.columns(4)
 
-
 with c1:
     st.metric(
-        "Events",
-        "18"
+        "🎉 Events",
+        "25"
     )
 
 with c2:
     st.metric(
-        "Clubs",
+        "🏛 Clubs",
         "24"
     )
 
 with c3:
     st.metric(
-        "Study Groups",
-        "12"
+        "📚 Study Groups",
+        "15"
     )
 
 with c4:
     st.metric(
-        "Students",
-        "300+"
+        "🚀 Opportunities",
+        "18"
     )
 
+st.markdown("---")
 
-# ==========================
+# --------------------------------
+# QUICK ACCESS
+# --------------------------------
+
+st.subheader(
+    "⚡ Quick Access"
+)
+
+a,b,c=st.columns(3)
+
+with a:
+
+    if st.button(
+        "🏛 Clubs",
+        use_container_width=True
+    ):
+
+        st.switch_page(
+            "pages/clubs.py"
+        )
+
+with b:
+
+    if st.button(
+        "🎉 Events",
+        use_container_width=True
+    ):
+
+        st.switch_page(
+            "pages/events.py"
+        )
+
+with c:
+
+    if st.button(
+        "📚 Study Groups",
+        use_container_width=True
+    ):
+
+        st.switch_page(
+            "pages/studygroup.py"
+        )
+
+st.markdown("---")
+
+# ==================================
+# TEACHER ANNOUNCEMENTS
+# ==================================
+
+st.subheader(
+    "👩‍🏫 Teacher Announcements"
+)
+
+if len(
+    st.session_state.teacher_posts
+) == 0:
+
+    st.info(
+        "No teacher announcements"
+    )
+
+else:
+
+    for i,post in enumerate(
+        st.session_state.teacher_posts
+    ):
+
+        left,right=st.columns(
+            [8,1]
+        )
+
+        with left:
+
+            st.warning(
+                f"📢 {post}"
+            )
+
+        with right:
+
+            if st.button(
+                "🗑",
+                key=f"teacher_{i}"
+            ):
+
+                st.session_state.teacher_posts.pop(
+                    i
+                )
+
+                st.rerun()
+
+st.markdown("---")
+
+# ==================================
+# CLUB ANNOUNCEMENTS
+# ==================================
+
+st.subheader(
+    "🏛 Club Announcements"
+)
+
+if len(
+    st.session_state.club_posts
+) == 0:
+
+    st.info(
+        "No club announcements"
+    )
+
+else:
+
+    for i,post in enumerate(
+        st.session_state.club_posts
+    ):
+
+        left,right=st.columns(
+            [8,1]
+        )
+
+        with left:
+
+            st.success(
+                f"📣 {post}"
+            )
+
+        with right:
+
+            if st.button(
+                "🗑",
+                key=f"club_{i}"
+            ):
+
+                st.session_state.club_posts.pop(
+                    i
+                )
+
+                st.rerun()
+
+st.markdown("---")
+
+# --------------------------------
+# TRENDING
+# --------------------------------
+
+st.subheader(
+    "🔥 Trending"
+)
+
+st.success(
+"""
+Finance Club Recruitment Open
+"""
+)
+
+st.success(
+"""
+Hackathon Registration Live
+"""
+)
+
+st.success(
+"""
+Study Buddy Requests Increasing
+"""
+)
+
+st.markdown("---")
+
+# --------------------------------
 # FOOTER
-# ==========================
-
-st.divider()
+# --------------------------------
 
 st.caption(
-"Campus Engagement Platform • Mahindra University"
+    "Mahindra University • Campus Engagement Platform"
 )

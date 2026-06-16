@@ -6,88 +6,107 @@ st.set_page_config(
     layout="wide"
 )
 
-# -------------------------
+# ---------------------
 # SESSION
-# -------------------------
+# ---------------------
 
-if "teacher_announcements" not in st.session_state:
-    st.session_state.teacher_announcements = []
+if "teacher_posts" not in st.session_state:
+    st.session_state.teacher_posts = []
 
-# -------------------------
+# ---------------------
 # HEADER
-# -------------------------
+# ---------------------
 
 st.title("👩‍🏫 Teacher Portal")
 
 st.caption(
-    "Monitor • Guide • Engage"
+"Create • Publish • Manage"
 )
 
-# -------------------------
-# NOTICE
-# -------------------------
+# ---------------------
+# CREATE
+# ---------------------
 
-st.subheader("📢 Faculty Notice Board")
+st.subheader(
+"📢 Publish Announcement"
+)
 
-notice = st.text_area(
-    "Write Announcement"
+title = st.text_input(
+"Announcement Title"
+)
+
+message = st.text_area(
+"Announcement"
 )
 
 if st.button(
-    "Publish Announcement"
+"Publish"
 ):
 
-    if notice:
+    if title and message:
 
-        st.session_state.teacher_announcements.append(
-            notice
-        )
+        st.session_state.teacher_posts.append({
+
+        "title":title,
+
+        "message":message
+
+        })
 
         st.success(
-            "Announcement Published"
+        "Announcement Published"
         )
+
+        st.rerun()
+
+# ---------------------
+# DASHBOARD
+# ---------------------
 
 st.markdown("---")
 
-# -------------------------
-# DASHBOARD
-# -------------------------
-
 st.subheader(
-    "📌 Published Announcements"
+"📌 Published Announcements"
 )
 
 if len(
-    st.session_state.teacher_announcements
-) == 0:
+st.session_state.teacher_posts
+)==0:
 
     st.info(
-        "No announcements yet"
+    "No announcements"
     )
 
-for i, announcement in enumerate(
-    st.session_state.teacher_announcements
+for i,post in enumerate(
+st.session_state.teacher_posts
 ):
 
-    box, delete = st.columns(
-        [5,1]
+    c1,c2=st.columns(
+    [6,1]
     )
 
-    with box:
+    with c1:
 
-        st.info(
-            announcement
+        st.success(
+f"""
+📢 {post["title"]}
+
+{post["message"]}
+"""
         )
 
-    with delete:
+    with c2:
 
         if st.button(
-            "🗑 Delete",
-            key=f"teacher_{i}"
+
+        "🗑",
+
+        key=f"teacher{i}"
+
         ):
 
-            st.session_state.teacher_announcements.pop(
-                i
+            st.session_state.teacher_posts.pop(
+            i
             )
 
             st.rerun()
@@ -95,5 +114,5 @@ for i, announcement in enumerate(
 st.markdown("---")
 
 st.caption(
-    "Mahindra University • Teacher Portal"
+"Mahindra University"
 )

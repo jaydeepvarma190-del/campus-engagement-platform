@@ -1,97 +1,114 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="Club Member",
-    page_icon="🏛",
-    layout="wide"
+page_title="Club Member",
+page_icon="🏛",
+layout="wide"
 )
 
-# -------------------------
+# ---------------------
 # SESSION
-# -------------------------
+# ---------------------
 
-if "club_announcements" not in st.session_state:
-    st.session_state.club_announcements = []
+if "club_posts" not in st.session_state:
+    st.session_state.club_posts=[]
 
-# -------------------------
+# ---------------------
 # HEADER
-# -------------------------
+# ---------------------
 
 st.title(
-    "🏛 Club Member Dashboard"
+"🏛 Club Member Dashboard"
 )
 
 st.caption(
-    "Manage • Publish • Connect"
+"Publish • Update • Manage"
 )
 
-# -------------------------
-# ANNOUNCEMENT
-# -------------------------
+# ---------------------
+# CREATE
+# ---------------------
 
 st.subheader(
-    "📢 Club Announcement"
+"📢 Publish Club Update"
 )
 
-announcement = st.text_area(
-    "Write Update"
+title=st.text_input(
+"Title"
+)
+
+message=st.text_area(
+"Update"
 )
 
 if st.button(
-    "Publish"
+"Publish"
 ):
 
-    if announcement:
+    if title and message:
 
-        st.session_state.club_announcements.append(
-            announcement
-        )
+        st.session_state.club_posts.append({
+
+        "title":title,
+
+        "message":message
+
+        })
 
         st.success(
-            "Announcement Published"
+        "Published"
         )
+
+        st.rerun()
+
+# ---------------------
+# POSTS
+# ---------------------
 
 st.markdown("---")
 
-# -------------------------
-# DASHBOARD
-# -------------------------
-
 st.subheader(
-    "📌 Club Updates"
+"📌 Published Updates"
 )
 
 if len(
-    st.session_state.club_announcements
-) == 0:
+st.session_state.club_posts
+)==0:
 
     st.info(
-        "No announcements"
+    "No announcements"
     )
 
-for i, post in enumerate(
-    st.session_state.club_announcements
+for i,post in enumerate(
+st.session_state.club_posts
 ):
 
-    c1, c2 = st.columns(
-        [5,1]
+    a,b=st.columns(
+    [6,1]
     )
 
-    with c1:
+    with a:
 
-        st.success(
-            post
+        st.info(
+f"""
+🏛 {post["title"]}
+
+{post["message"]}
+"""
         )
 
-    with c2:
+    with b:
 
         if st.button(
-            "🗑 Delete",
-            key=f"club_{i}"
+
+        "🗑",
+
+        key=f"club{i}"
+
         ):
 
-            st.session_state.club_announcements.pop(
-                i
+            st.session_state.club_posts.pop(
+            i
             )
 
             st.rerun()
@@ -99,5 +116,5 @@ for i, post in enumerate(
 st.markdown("---")
 
 st.caption(
-    "Mahindra University • Club Member Portal"
+"Mahindra University"
 )
