@@ -1,39 +1,30 @@
 import sqlite3
 
+# Connect database
 conn = sqlite3.connect(
-    "data/campus.db",
+    "campus.db",
     check_same_thread=False
 )
 
-cur = conn.cursor()
+# Create cursor
+cursor = conn.cursor()
 
-cur.execute("""
-CREATE TABLE IF NOT EXISTS students(
-id INTEGER PRIMARY KEY,
-college_id TEXT UNIQUE,
-name TEXT,
-school TEXT,
-program TEXT
-)
-""")
 
-cur.execute("""
-CREATE TABLE IF NOT EXISTS events(
-id INTEGER PRIMARY KEY,
-title TEXT,
-club TEXT,
-venue TEXT,
-date TEXT,
-attending INTEGER
-)
-""")
+def create_tables():
 
-cur.execute("""
-CREATE TABLE IF NOT EXISTS clubs(
-id INTEGER PRIMARY KEY,
-name TEXT,
-description TEXT
-)
-""")
+    # Users table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users(
 
-conn.commit()
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+            name TEXT NOT NULL,
+
+            email TEXT UNIQUE NOT NULL,
+
+            password TEXT NOT NULL
+
+        )
+    """)
+
+    conn.commit()
